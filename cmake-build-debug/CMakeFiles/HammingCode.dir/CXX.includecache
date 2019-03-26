@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Oska/Desktop/Repos/HammingCode/Conversores.h
+stdlib.h
+-
+cstdio
+-
+string
+-
+sstream
+-
+
+C:/Users/Oska/Desktop/Repos/HammingCode/ErrorDetection.h
+cstdio
+-
+
+C:/Users/Oska/Desktop/Repos/HammingCode/main.cpp
+iostream
+-
+ErrorDetection.h
+C:/Users/Oska/Desktop/Repos/HammingCode/ErrorDetection.h
+Conversores.h
+C:/Users/Oska/Desktop/Repos/HammingCode/Conversores.h
+
