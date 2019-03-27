@@ -1,9 +1,13 @@
 // wxWidgets "Hello World" Program
+
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
+
 class HammingCodeApp : public wxApp
 {
 public:
@@ -22,6 +26,8 @@ enum
 {
 	ID_Hello = 1
 };
+
+
 wxIMPLEMENT_APP(HammingCodeApp);
 bool HammingCodeApp::OnInit()
 {
