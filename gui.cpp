@@ -71,6 +71,13 @@ void MyFrame::OnNewProject(wxCommandEvent &event)
 {
 	wxTextEntryDialog binaryDialog(this, "Hola mundo");
 	if ( binaryDialog.ShowModal() == wxID_OK ) {
-		ErrorDetection::checkBinary(binaryDialog.GetValue())
+
+		long long int number;
+
+		if (!binaryDialog.GetValue().ToLongLong(&number) || !ErrorDetection::checkBinary(number)) {
+			wxMessageBox(L"El número introducido no es binario.", "Error", wxOK | wxICON_ERROR);
+		} else if (!ErrorDetection::lengthCheck(number)) {
+			wxMessageBox(L"El número introducido sobrepasa los 12 bits.", "Error", wxOK | wxICON_ERROR);
+		}
 	}
 }
