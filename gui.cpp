@@ -5,6 +5,8 @@
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
+#include "ErrorDetection.h"
+
 #endif
 
 
@@ -18,13 +20,13 @@ class MyFrame : public wxFrame
 public:
 	MyFrame();
 private:
-	void OnHello(wxCommandEvent& event);
+	void OnNewProject(wxCommandEvent &event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 };
 enum
 {
-	ID_Hello = 1
+	ID_NEW_PROJECT = 1
 };
 
 
@@ -36,22 +38,22 @@ bool HammingCodeApp::OnInit()
 	return true;
 }
 MyFrame::MyFrame()
-		: wxFrame(NULL, wxID_ANY, "Hello World")
+		: wxFrame(NULL, wxID_ANY, "Binary App")
 {
 	wxMenu *menuFile = new wxMenu;
-	menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
-					 "Help string shown in status bar for this menu item");
+	menuFile->Append(ID_NEW_PROJECT, "&Nuevo proyecto...\tCtrl-N",
+					 "Inicia un nuevo proyecto en Binary App");
 	menuFile->AppendSeparator();
-	menuFile->Append(wxID_EXIT);
+	menuFile->Append(wxID_EXIT, "Salir", L"Sale de la aplicación");
 	wxMenu *menuHelp = new wxMenu;
-	menuHelp->Append(wxID_ABOUT);
+	menuHelp->Append(wxID_ABOUT, "Acerca de", L"Muestra los detalles de la aplicación");
 	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append(menuFile, "&File");
-	menuBar->Append(menuHelp, "&Help");
+	menuBar->Append(menuFile, "&Archivo");
+	menuBar->Append(menuHelp, "&Ayuda");
 	SetMenuBar( menuBar );
 	CreateStatusBar();
-	SetStatusText("Welcome to wxWidgets!");
-	Bind(wxEVT_MENU, &MyFrame::OnHello, this, ID_Hello);
+	SetStatusText("¡Bienvenido a Binary App!");
+	Bind(wxEVT_MENU, &MyFrame::OnNewProject, this, ID_NEW_PROJECT);
 	Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
 	Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
 }
@@ -61,10 +63,14 @@ void MyFrame::OnExit(wxCommandEvent& event)
 }
 void MyFrame::OnAbout(wxCommandEvent& event)
 {
-	wxMessageBox("This is a wxWidgets Hello World example",
-				 "About Hello World", wxOK | wxICON_INFORMATION);
+	wxMessageBox(L"Esta es una aplicación hecha para el curso EL-3307 Diseño Lógico del Instituto Tecnológico de "
+			  "Costa Rica, primer semestre 2019.\n\nEstudiantes:\n• Joseph Vargas\n• Gustavo Segura\n• Jung Bak",
+				 "Acerca de Binary App", wxOK | wxICON_INFORMATION);
 }
-void MyFrame::OnHello(wxCommandEvent& event)
+void MyFrame::OnNewProject(wxCommandEvent &event)
 {
-	wxLogMessage("Hello world from wxWidgets!");
+	wxTextEntryDialog binaryDialog(this, "Hola mundo");
+	if ( binaryDialog.ShowModal() == wxID_OK ) {
+		ErrorDetection::checkBinary(binaryDialog.GetValue())
+	}
 }
