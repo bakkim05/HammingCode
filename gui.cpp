@@ -4,7 +4,7 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-class MyApp : public wxApp
+class HammingCodeApp : public wxApp
 {
 public:
 	virtual bool OnInit();
@@ -22,8 +22,8 @@ enum
 {
 	ID_Hello = 1
 };
-wxIMPLEMENT_APP(MyApp);
-bool MyApp::OnInit()
+wxIMPLEMENT_APP(HammingCodeApp);
+bool HammingCodeApp::OnInit()
 {
 	MyFrame *frame = new MyFrame();
 	frame->Show(true);
