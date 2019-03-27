@@ -4,7 +4,8 @@
 #include "Conversores.h"
 
 
-int main() {
+// La función de entrada es OnInit de gui.cpp
+int main2() {
     ErrorDetection ED;
     Conversores C;
 
