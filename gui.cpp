@@ -3,6 +3,11 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
+
+#include "ErrorDetection.h"
+#include "Conversores.h"
+#include "hamming.h"
+#include <vector>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -31,9 +36,54 @@ enum
 wxIMPLEMENT_APP(HammingCodeApp);
 bool HammingCodeApp::OnInit()
 {
-	MyFrame *frame = new MyFrame();
-	frame->Show(true);
-	return true;
+    ErrorDetection ED;
+    Conversores C;
+    Hamming H;
+
+
+    std::cout<<"Binary to Decimal :: " << C.binary2decimal(110111111) << std::endl;
+    std::cout<<"Decimal to Hexadecimal :: " << C.decimal2hexa(C.binary2decimal(110111111)) << std::endl;
+    std::cout<<"Decimal to Binary :: " << C.decimal2binarySTR(15) << std::endl;
+    std::cout<<"BCD :: " << C.decimal2BDC(162) << std::endl;
+    std::vector<int> vec{10, 20, 30};
+
+//ENCODE
+    std::vector<int> orig {0,1,1,0,0,0,0};
+    std::cout<< "Orig:" <<std::endl;
+    H.print(orig);
+    std::cout<< "Extend:" <<std::endl;
+    H.print( H.extend(orig) );
+    std::cout<< "Encoded:" <<std::endl;
+    H.print( H.encode(orig,0) );
+
+
+//DECODE
+    std::vector<int> input {1,0,0,0,1,1,0,0,1,0,1};
+    std::cout<< "Input:" <<std::endl;
+    H.print(input);
+    std::cout<< "DECODED:" <<std::endl;
+    H.print( H.decode(input,0) );
+////
+////                               0	1	1	0	0	0	0
+///                               {1,1,0,0,1,1,0,0,0,0,0}
+    std::vector<int> error_input {0,1,0,0,1,1,0,0,0,0,0};
+    std::cout<< "Error input :" <<std::endl;
+    H.print(error_input);
+    std::cout<< "DECODED AND FIXED:" <<std::endl;
+    H.print( H.decode(error_input,0) );
+
+//    H.findNParity(error_input,1,0);
+
+
+
+//    for (int i = 0; i < 17; ++i) {
+//        std::cout<< i << " P2: " << H.isPowerOfTwo(i) <<std::endl;
+//    }
+
+
+//	MyFrame *frame = new MyFrame();
+//	frame->Show(true);
+    return true;
 }
 MyFrame::MyFrame()
 		: wxFrame(NULL, wxID_ANY, "Hello World")

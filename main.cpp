@@ -2,7 +2,7 @@
 
 #include "ErrorDetection.h"
 #include "Conversores.h"
-
+#include "string.h"
 
 // La función de entrada es OnInit de gui.cpp
 int main2() {
