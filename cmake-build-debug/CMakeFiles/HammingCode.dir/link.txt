@@ -1,3 +1,0 @@
-C:\Users\Oska\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\182.5107.21\bin\cmake\win\bin\cmake.exe -E remove -f CMakeFiles\HammingCode.dir/objects.a
-C:\MinGW\bin\ar.exe cr CMakeFiles\HammingCode.dir/objects.a @CMakeFiles\HammingCode.dir\objects1.rsp
-C:\MinGW\bin\g++.exe -g   -Wl,--whole-archive CMakeFiles\HammingCode.dir/objects.a -Wl,--no-whole-archive  -o HammingCode.exe -Wl,--out-implib,libHammingCode.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\HammingCode.dir\linklibs.rsp
