@@ -39,15 +39,18 @@ std::vector<int> Hamming::decode(std::vector<int> input, int parity){
 
 int Hamming::findError(std::vector<int> input, int parity){
     int error_index = -1;
-    int n=1;
-    while(std::pow(2,n)<input.size()){
+    int n=0;
+    while( std::pow(2,n)<input.size() ){
+
         if (! checkNParity(input, n, parity) ){
-            if(error_index == -1){
-                error_index = 1 +int(std::pow(2,n));
-            }
-            else{
+//            if(error_index == -1){
+
+//                error_index = int(std::pow(2,n));
+
+//            }
+//            else{
                 error_index+=int(std::pow(2,n));
-            }
+//            }
         }
         n++;
     }
@@ -72,7 +75,9 @@ int Hamming::findNParity(std::vector<int> input, int n , int parity){
     int i=step_lenght-1;
     while(i<input.size()){
         for (int j = 0; (j < step_lenght) and (j+i)<input.size(); ++j) {
+            if(i+j != step_lenght-1){
             parity_counter+=input[i+j];
+            }
         }
         i+=2*step_lenght;
     }

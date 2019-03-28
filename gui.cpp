@@ -72,7 +72,7 @@ bool HammingCodeApp::OnInit()
     std::vector<int> vec{10, 20, 30};
 
 //ENCODE
-    std::vector<int> orig {0,1,1,0,0,0,0};
+    std::vector<int> orig {0,1,1,0,1,0,0};
     std::cout<< "Orig:" <<std::endl;
     H.print(orig);
     std::cout<< "Extend:" <<std::endl;
@@ -81,22 +81,27 @@ bool HammingCodeApp::OnInit()
     H.print( H.encode(orig,0) );
 
 
-//DECODE
+//DECODE                    01001101100
     std::vector<int> input {1,0,0,0,1,1,0,0,1,0,1};
     std::cout<< "Input:" <<std::endl;
     H.print(input);
     std::cout<< "DECODED:" <<std::endl;
     H.print( H.decode(input,0) );
 ////
-////                               0	1	1	0	0	0	0
-///                               {1,1,0,0,1,1,0,0,0,0,0}
-    std::vector<int> error_input {0,1,0,0,1,1,0,0,0,0,0};
+////                               0,1,1,0,1,0,0 BIN
+///                               0,1,0,0,1,1,0,1,1,0,0 HIMMING
+/// /                                                 v
+    std::vector<int> error_input {0,1,0,0,1,1,0,1,1,0,1};
     std::cout<< "Error input :" <<std::endl;
     H.print(error_input);
     std::cout<< "DECODED AND FIXED:" <<std::endl;
     H.print( H.decode(error_input,0) );
+//    std::cout<< "P0:"<<  H.findNParity(error_input,0,0) << std::endl;
+//    std::cout<< "P1:"<<  H.findNParity(error_input,1,0) << std::endl;
+//    std::cout<< "P2:"<<  H.findNParity(error_input,2,0) << std::endl;
+//    std::cout<< "P3:"<<  H.findNParity(error_input,3,0) << std::endl;
+    std::cout<< "ERROR INDEX:"<<  H.findError(error_input,0) << std::endl;
 
-//    H.findNParity(error_input,1,0);
 
 
 

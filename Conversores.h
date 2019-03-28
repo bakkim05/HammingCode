@@ -21,8 +21,10 @@ public:
     string decimal2hexa(int input);
     string decimal2BDC(int input);
     string binary2BCD(string input);
+//    vector<int> decimal2binVec(int input);
+//    vector<int> decimal2binVec(int input);
 
-};
+ };
 
 
 #endif //CODIGOSBINARIOS_CONVERSORES_H
