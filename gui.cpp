@@ -73,13 +73,28 @@ bool HammingCodeApp::OnInit()
     std::vector<int> vec{10, 20, 30};
 
 //ENCODE
-    std::vector<int> orig {0,1,1,0,1,0,0};
+    std::vector<int> orig {0,1,1,0,1,0,1};
     std::cout<< "Orig:" <<std::endl;
     H.print(orig);
     std::cout<< "Extend:" <<std::endl;
     H.print( H.extend(orig) );
     std::cout<< "Encoded:" <<std::endl;
     H.print( H.encode(orig,0) );
+
+
+    std::cout<< "Ext: " ;
+    H.print( H.extend(orig) );
+    std::vector<int> ext = H.extend(orig);
+    std::cout<< "p1:  " ;
+    H.print( H.createParityVector(ext,0,0) );
+    std::cout<< "p2:  " ;
+    H.print( H.createParityVector(ext,1,0) );
+    std::cout<< "p3:  " ;
+    H.print( H.createParityVector(ext,2,0) );
+    std::cout<< "p4:  " ;
+    H.print( H.createParityVector(ext,3,0) );
+
+
 
 
 //DECODE                    01001101100

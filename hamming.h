@@ -13,6 +13,7 @@ public:
     std::vector<int> extend(std::vector<int> input );
     std::vector<int> reduce(std::vector<int> input);
     int findNParity(std::vector<int> input, int n , int parity);
+    std::vector<int> createParityVector(std::vector<int> input, int n , int parity);
     int checkNParity(std::vector<int> input, int n , int parity);
     bool isPowerOfTwo(int x);
 

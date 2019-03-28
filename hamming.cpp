@@ -101,3 +101,30 @@ void Hamming::print(std::vector<int> input){
         }
         std::cout << std::endl;
 }
+
+
+
+std::vector<int> Hamming::createParityVector(std::vector<int> input, int n , int parity){
+    int step_lenght= std::pow(2,n);
+    int parity_counter= parity;
+    int i=step_lenght-1;
+    for (int j = 0; j < i; ++j) {
+        input[j]=0;
+    }
+    while(i<input.size()){
+        for (int j = 0; (j < step_lenght) and (j+i)<input.size(); ++j) {
+            if(i+j != step_lenght-1){
+            parity_counter+=input[i+j];
+            }
+        }
+        for (int j = i+step_lenght; (j < i+2*step_lenght)and j<input.size(); ++j) {
+            input[j]=9;//CAMBIAR POR CARACTER NEUTRO
+        }
+        i+=2*step_lenght;
+    }
+    input[int(std::pow(2,n))-1]=parity_counter%2;
+    return input;
+}
+
+
+
