@@ -263,13 +263,16 @@ void MyFrame::UpdateLabels()
 	hexLabel->SetLabel(C.decimal2hexa((C.binary2decimal(binaryNumber))));
 	bcdLabel->SetLabel(C.decimal2BDC(C.binary2decimal(binaryNumber)));
 
+	string number = std::to_string(binaryNumber);
+	int length = number.length();
+
 	//Obtener paridad, 0 = par, 1 = impar
 	//paridad = parityChoice->GetSelection();
 
     tabla->SetLabel(L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-                    "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d1  | d11 | p5 | d12 |\n"
+                    "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d10 | d11 | p5 | d12 |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-                    "| Palabra de datos:               |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+					"| Palabra de datos:               |    |    | "+H.showAtLength(number,0)+"  |    | "+H.showAtLength(number,1)+"  | "+H.showAtLength(number,2)+"  | "+H.showAtLength(number,3)+"  |    | "+H.showAtLength(number,4)+"  | "+H.showAtLength(number,5)+"  | "+H.showAtLength(number,6)+"  | "+H.showAtLength(number,7)+"  | "+H.showAtLength(number,8)+"  | "+H.showAtLength(number,9)+"   | "+H.showAtLength(number,10)+"   |    | "+H.showAtLength(number,11)+"   |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
                     "| p1                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"

@@ -2,6 +2,7 @@
 #define HAMMING_H
 #include <vector>
 #include <math.h>
+#include <string>
 
 class Hamming
 {
@@ -16,6 +17,8 @@ public:
     std::vector<int> createParityVector(std::vector<int> input, int n , int parity);
     int checkNParity(std::vector<int> input, int n , int parity);
     bool isPowerOfTwo(int x);
+	std::string showAtLength(const std::string& number, int index);
+
 
 private:
 

@@ -127,4 +127,10 @@ std::vector<int> Hamming::createParityVector(std::vector<int> input, int n , int
 }
 
 
-
+std::string Hamming::showAtLength(const std::string& number, int index) {
+	if (number.length() > index) {
+		return number.substr(index, 1);
+	} else {
+		return " ";
+	}
+}
