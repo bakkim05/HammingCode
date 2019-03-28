@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 aux_source_directory(. SRC_LIST)
 
-set(wxWidgets_CONFIGURATION mswu)
+set(wxWidgets_CONFIGURATION mswud)
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 include(${wxWidgets_USE_FILE})
 

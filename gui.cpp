@@ -24,8 +24,7 @@
 #include "wx/generic/gridctrl.h"
 #include "wx/generic/grideditors.h"
 
-
-class wxGrid;
+#include <wx/webview.h>
 
 class HammingCodeApp : public wxApp
 {
@@ -41,6 +40,8 @@ class MyFrame : public wxFrame
 	wxStaticText *decLabel;
 	wxStaticText *hexLabel;
 	wxStaticText *bcdLabel;
+	wxChoice *parityChoice;
+	wxStaticText *tabla;
 	long long int binaryNumber;
 public:
 	MyFrame();
@@ -115,7 +116,7 @@ bool HammingCodeApp::OnInit()
     return true;
 }
 MyFrame::MyFrame()
-		: wxFrame(NULL, wxID_ANY, "Binary App")
+		: wxFrame(NULL, wxID_ANY, "Binary App", wxDefaultPosition, wxSize(700, 500), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
 {
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(ID_NEW_PROJECT, "&Nuevo proyecto...\tCtrl-N",
@@ -139,11 +140,20 @@ MyFrame::MyFrame()
 	wxStaticText *label1 = new wxStaticText(this, wxID_ANY, L"Número en decimal: ");
 	wxStaticText *label2 = new wxStaticText(this, wxID_ANY, L"Número en hexadecimal: ");
 	wxStaticText *label3 = new wxStaticText(this, wxID_ANY, L"Número en BCD: ");
+	wxStaticText *label4 = new wxStaticText(this, wxID_ANY, L"Paridad: ");
 
 	binaryLabel = new wxStaticText(this, wxID_ANY, "");
 	decLabel = new wxStaticText(this, wxID_ANY, "");
 	hexLabel = new wxStaticText(this, wxID_ANY, "");
 	bcdLabel = new wxStaticText(this, wxID_ANY, "");
+
+	wxArrayString myChoices;
+	myChoices.Add(wxT("Paridad par")); // populate the array
+	myChoices.Add(wxT("Paridad impar"));
+
+	parityChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, myChoices);
+	parityChoice->SetSelection(0);
+
 
 
 	parentSizer = new wxBoxSizer(wxVERTICAL);
@@ -151,7 +161,7 @@ MyFrame::MyFrame()
 	parentSizer->AddSpacer(10);
 
 
-	sizer = new wxGridSizer(4, 2, 0, 0);
+	sizer = new wxGridSizer(5, 2, 0, 0);
 
 	sizer->Add(label, 0, wxEXPAND | wxLEFT, 10);
 	sizer->Add(binaryLabel, 0, wxEXPAND);
@@ -165,35 +175,37 @@ MyFrame::MyFrame()
 	sizer->Add(label3, 0,  wxEXPAND | wxLEFT, 10);
 	sizer->Add(bcdLabel, 0, wxEXPAND);
 
+	sizer->Add(label4, 0,  wxEXPAND | wxLEFT, 10);
+	sizer->Add(parityChoice, 0, wxEXPAND);
+
+
 	parentSizer->Add(sizer);
 
 	parentSizer->AddSpacer(10);
 
+	tabla = new wxStaticText(this, wxID_ANY, L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d1  | d11 | p5 | d12 |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| Palabra de datos (sin paridad): |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| p1                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| p2                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| p3                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| p4                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "| Palabra de datos (con paridad): |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+");
 
-	gs = new wxGridSizer(4, 5, 3, 3);
 
-	gs->Add(new wxButton(this, -1, wxT("Cls")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("Bck")), 0, wxEXPAND);
-	gs->Add(new wxStaticText(this, -1, wxT("")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("Close")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("7")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("8")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("9")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("/")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("4")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("5")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("6")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("*")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("1")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("2")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("3")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("-")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("0")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT(".")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("=")), 0, wxEXPAND);
-	gs->Add(new wxButton(this, -1, wxT("+")), 0, wxEXPAND);
+	wxFont* tmpFont = new wxFont(wxFontInfo(8).FaceName("Ubuntu Mono"));
+	tmpFont->SetFaceName("Ubuntu Mono");
+	tabla->SetFont(*tmpFont);
 
-	parentSizer->Add(gs);
+	parentSizer->Add(tabla, 0, wxEXPAND |wxALL, 10);
+
 
 	SetSizer(parentSizer);
 	Centre();
@@ -234,6 +246,25 @@ void MyFrame::UpdateLabels()
 	decLabel->SetLabel(std::to_string(C.binary2decimal(binaryNumber)));
 	hexLabel->SetLabel(C.decimal2hexa((C.binary2decimal(binaryNumber))));
 	bcdLabel->SetLabel(C.decimal2BDC(C.binary2decimal(binaryNumber)));
+
+	//Obtener paridad, 0 = par, 1 = impar
+	//paridad = parityChoice->GetSelection();
+
+	tabla->SetLabel(L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d10 | d11 | p5 | d12 |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| Palabra de datos (sin paridad): | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| p1                              | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| p2                              | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| p3                              | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| p4                              | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+					"| Palabra de datos (con paridad): | #  | #  | #  | #  | #  | #  | #  | 0  | #  | #  | #  | #  | #  | #   | #   | #  | #   |\n"
+					"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+");
 
 
 }
