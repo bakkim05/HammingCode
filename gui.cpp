@@ -241,6 +241,7 @@ void MyFrame::OnNewProject(wxCommandEvent &event)
 void MyFrame::UpdateLabels()
 {
 	Conversores C;
+	Hamming H;
 
 	binaryLabel->SetLabel(std::to_string(binaryNumber));
 	decLabel->SetLabel(std::to_string(C.binary2decimal(binaryNumber)));
