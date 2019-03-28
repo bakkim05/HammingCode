@@ -10,8 +10,8 @@
 
 class ErrorDetection {
 public:
-    bool checkBinary(int inputNumber);
-    bool lengthCheck(long long int inputNumber);
+    bool static checkBinary(long long int inputNumber);
+    bool static lengthCheck(long long int inputNumber);
 
 };
 
