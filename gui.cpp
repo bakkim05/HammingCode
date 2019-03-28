@@ -4,16 +4,28 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
+#ifndef WX_PRECOMP
+	#include <wx/wx.h>
+#endif
+
 #include "ErrorDetection.h"
 #include "Conversores.h"
 #include "hamming.h"
+
 #include <vector>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#include "ErrorDetection.h"
 
-#endif
+#include "wx/colordlg.h"
+#include "wx/fontdlg.h"
+#include "wx/numdlg.h"
+#include "wx/aboutdlg.h"
 
+#include "wx/grid.h"
+#include "wx/headerctrl.h"
+#include "wx/generic/gridctrl.h"
+#include "wx/generic/grideditors.h"
+
+
+class wxGrid;
 
 class HammingCodeApp : public wxApp
 {
@@ -22,12 +34,22 @@ public:
 };
 class MyFrame : public wxFrame
 {
+	wxBoxSizer *parentSizer;
+	wxGridSizer *sizer;
+	wxGridSizer *gs;
+	wxStaticText *binaryLabel;
+	wxStaticText *decLabel;
+	wxStaticText *hexLabel;
+	wxStaticText *bcdLabel;
+	long long int binaryNumber;
 public:
 	MyFrame();
 private:
 	void OnNewProject(wxCommandEvent &event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
+
+	void UpdateLabels();
 };
 enum
 {
@@ -83,8 +105,8 @@ bool HammingCodeApp::OnInit()
 //    }
 
 
-//	MyFrame *frame = new MyFrame();
-//	frame->Show(true);
+	MyFrame *frame = new MyFrame();
+	frame->Show(true);
     return true;
 }
 MyFrame::MyFrame()
@@ -106,6 +128,71 @@ MyFrame::MyFrame()
 	Bind(wxEVT_MENU, &MyFrame::OnNewProject, this, ID_NEW_PROJECT);
 	Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
 	Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
+
+
+	wxStaticText *label = new wxStaticText(this, wxID_ANY, L"Número binario introducido: ");
+	wxStaticText *label1 = new wxStaticText(this, wxID_ANY, L"Número en decimal: ");
+	wxStaticText *label2 = new wxStaticText(this, wxID_ANY, L"Número en hexadecimal: ");
+	wxStaticText *label3 = new wxStaticText(this, wxID_ANY, L"Número en BCD: ");
+
+	binaryLabel = new wxStaticText(this, wxID_ANY, "");
+	decLabel = new wxStaticText(this, wxID_ANY, "");
+	hexLabel = new wxStaticText(this, wxID_ANY, "");
+	bcdLabel = new wxStaticText(this, wxID_ANY, "");
+
+
+	parentSizer = new wxBoxSizer(wxVERTICAL);
+
+	parentSizer->AddSpacer(10);
+
+
+	sizer = new wxGridSizer(4, 2, 0, 0);
+
+	sizer->Add(label, 0, wxEXPAND | wxLEFT, 10);
+	sizer->Add(binaryLabel, 0, wxEXPAND);
+
+	sizer->Add(label1, 0,  wxEXPAND | wxLEFT, 10);
+	sizer->Add(decLabel, 0, wxEXPAND);
+
+	sizer->Add(label2, 0,  wxEXPAND | wxLEFT, 10);
+	sizer->Add(hexLabel, 0, wxEXPAND);
+
+	sizer->Add(label3, 0,  wxEXPAND | wxLEFT, 10);
+	sizer->Add(bcdLabel, 0, wxEXPAND);
+
+	parentSizer->Add(sizer);
+
+	parentSizer->AddSpacer(10);
+
+
+	gs = new wxGridSizer(4, 5, 3, 3);
+
+	gs->Add(new wxButton(this, -1, wxT("Cls")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("Bck")), 0, wxEXPAND);
+	gs->Add(new wxStaticText(this, -1, wxT("")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("Close")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("7")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("8")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("9")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("/")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("4")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("5")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("6")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("*")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("1")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("2")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("3")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("-")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("0")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT(".")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("=")), 0, wxEXPAND);
+	gs->Add(new wxButton(this, -1, wxT("+")), 0, wxEXPAND);
+
+	parentSizer->Add(gs);
+
+	SetSizer(parentSizer);
+	Centre();
+
 }
 void MyFrame::OnExit(wxCommandEvent& event)
 {
@@ -119,7 +206,7 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 }
 void MyFrame::OnNewProject(wxCommandEvent &event)
 {
-	wxTextEntryDialog binaryDialog(this, "Hola mundo");
+	wxTextEntryDialog binaryDialog(this, L"Inserte un número binario de hasta 12 bits", "Nuevo proyecto");
 	if ( binaryDialog.ShowModal() == wxID_OK ) {
 
 		long long int number;
@@ -128,6 +215,20 @@ void MyFrame::OnNewProject(wxCommandEvent &event)
 			wxMessageBox(L"El número introducido no es binario.", "Error", wxOK | wxICON_ERROR);
 		} else if (!ErrorDetection::lengthCheck(number)) {
 			wxMessageBox(L"El número introducido sobrepasa los 12 bits.", "Error", wxOK | wxICON_ERROR);
+		} else {
+			binaryNumber = number;
+			UpdateLabels();
 		}
 	}
+}
+void MyFrame::UpdateLabels()
+{
+	Conversores C;
+
+	binaryLabel->SetLabel(std::to_string(binaryNumber));
+	decLabel->SetLabel(std::to_string(C.binary2decimal(binaryNumber)));
+	hexLabel->SetLabel(C.decimal2hexa((C.binary2decimal(binaryNumber))));
+	bcdLabel->SetLabel(C.decimal2BDC(C.binary2decimal(binaryNumber)));
+
+
 }

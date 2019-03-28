@@ -38,7 +38,7 @@ string Conversores::decimal2BDC(int input) {
         rem = input % 10;
         input = input / 10;
 
-        output = binary2BCD(decimal2binarySTR(rem)) + output;
+        output = binary2BCD(decimal2binarySTR(rem)) + " " + output;
     }
     return output;
 }
