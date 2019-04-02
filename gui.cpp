@@ -414,13 +414,22 @@ void MyFrame::UpdateLabels()
 	vectorEncoded = H->encode(vectorInit, paridad);
 	vectorExtended = H->extend(vectorInit);
 
+	parity0.clear();
+	parity1.clear();
+	parity2.clear();
+	parity3.clear();
+	parity4.clear();
+
 
 	// TODO: DESCOMENTAR ESTO
 	parity0 = H->createParityVector(vectorInit, 0, paridad);
 	parity1 = H->createParityVector(vectorInit, 1, paridad);
 	parity2 = H->createParityVector(vectorInit, 2, paridad);
-	parity3 = H->createParityVector(vectorInit, 3, paridad);
-	//parity4 = H->createParityVector(vectorInit, 4, paridad);
+
+	if (binaryString.size() > 4)
+		parity3 = H->createParityVector(vectorInit, 3, paridad);
+	if (binaryString.size() > 11)
+		parity4 = H->createParityVector(vectorInit, 4, paridad);
 
 
 
