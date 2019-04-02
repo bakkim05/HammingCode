@@ -1,0 +1,3 @@
+/home/joseph/tec/2019/HammingCode/CMakeFiles/rebuild_cache.dir
+/home/joseph/tec/2019/HammingCode/CMakeFiles/HammingCode.dir
+/home/joseph/tec/2019/HammingCode/CMakeFiles/edit_cache.dir

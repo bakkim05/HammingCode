@@ -1,12 +1,35 @@
 #include "hamming.h"
 #include <iostream>
+#include <string>
 
 //Hamming::Hamming()
 //{
 
 //}
 
-std::vector<int> Hamming::encode(std::vector<int> input, int parity){
+std::vector<int> Hamming::stringToArray(std::string str) {
+	std::vector<int> result;
+	for (int i = 0; i < str.size(); i++){
+		int data = str[i] - '0';
+		result.push_back(data);
+	}
+
+	return result;
+}
+
+std::vector<int> Hamming::integerToArray(long long int x)
+{
+	std::vector <int> resultArray;
+	while (true)
+	{
+		resultArray.insert(resultArray.begin(), x%10);
+		x /= 10;
+		if(x == 0)
+			return resultArray;
+	}
+}
+
+std::vector<int> Hamming::encode(const std::vector<int>& input, int parity){
     std::vector<int> result = extend(input);
     int n=0;
     while(std::pow(2,n)<=result.size()){
@@ -61,12 +84,12 @@ std::vector<int> Hamming::extend(std::vector<int> input ){
     std::vector<int> result;
     int i = 0;
     while (i<input.size()) {
-        while(isPowerOfTwo(result.size()+1) ){
-            result.push_back(0);
-        }
-        result.push_back(input[i]);
-        i++;
-    }
+		while (isPowerOfTwo(result.size() + 1)) {
+			result.push_back(0);
+		}
+		result.push_back(input[i]);
+		i++;
+	}
     return result;
 }
 int Hamming::findNParity(std::vector<int> input, int n , int parity){
@@ -104,12 +127,13 @@ void Hamming::print(std::vector<int> input){
 
 
 
-std::vector<int> Hamming::createParityVector(std::vector<int> input, int n , int parity){
+std::vector<int> Hamming::createParityVector(std::vector<int> input2, int n , int parity){
+	std::vector input = extend(input2);
     int step_lenght= std::pow(2,n);
     int parity_counter= parity;
     int i=step_lenght-1;
     for (int j = 0; j < i; ++j) {
-        input[j]=0;
+        input[j]=9;
     }
     while(i<input.size()){
         for (int j = 0; (j < step_lenght) and (j+i)<input.size(); ++j) {
@@ -134,3 +158,16 @@ std::string Hamming::showAtLength(const std::string& number, int index) {
 		return " ";
 	}
 }
+
+std::string Hamming::printIf(const std::vector<int>& vector, int index) {
+	if (vector.size() > index) {
+		if (vector.at(index) == 9) {
+			return " ";
+		} else {
+			return std::to_string(vector.at(index));
+		}
+	} else {
+		return " ";
+	}
+}
+
