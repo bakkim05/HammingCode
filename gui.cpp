@@ -58,8 +58,10 @@ class MyFrame : public wxFrame
 	wxStaticText *hexLabel;
 	wxStaticText *bcdLabel;
 	wxChoice *parityChoice;
-	wxStaticText *tabla;
+	wxTextCtrl *tabla;
+	wxTextCtrl *tabla2;
 	long long int binaryNumber;
+	wxStaticText *errorLabel;
 	std::vector<int> vectorInit;
 	std::vector<int> vectorExtended;
 	std::vector<int> vectorEncoded;
@@ -70,6 +72,10 @@ class MyFrame : public wxFrame
 	std::vector<int> parity2;
 	std::vector<int> parity3;
 	std::vector<int> parity4;
+
+	bool fallando = false;
+	std::vector<int> vectorFallandoInit;
+	std::vector<int> vectorFallandoEncoded;
 
 	Conversores C;
 public:
@@ -82,6 +88,18 @@ private:
 	void UpdateLabels();
 
 	void doUpdate(wxCommandEvent &event);
+
+	wxChoice *falloChoice;
+
+
+	void FallarBit(wxCommandEvent &event);
+
+	void UpdateFallaTabla();
+
+
+	string CheckSameItem(int pos);
+
+	void PrintTabla();
 };
 enum
 {
@@ -164,7 +182,7 @@ bool HammingCodeApp::OnInit()
     return true;
 }
 MyFrame::MyFrame()
-		: wxFrame(NULL, wxID_ANY, "Binary App", wxDefaultPosition, wxSize(700, 500), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
+		: wxFrame(NULL, wxID_ANY, "Binary App", wxDefaultPosition, wxSize(700, 620), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
 {
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(ID_NEW_PROJECT, "&Nuevo proyecto...\tCtrl-N",
@@ -190,6 +208,8 @@ MyFrame::MyFrame()
 	wxStaticText *label2 = new wxStaticText(this, wxID_ANY, L"Número en hexadecimal: ");
 	wxStaticText *label3 = new wxStaticText(this, wxID_ANY, L"Número en BCD: ");
 	wxStaticText *label4 = new wxStaticText(this, wxID_ANY, L"Paridad: ");
+	wxStaticText *label5 = new wxStaticText(this, wxID_ANY, L"Fallar un bit: ");
+
 
 	binaryLabel = new wxStaticText(this, wxID_ANY, "");
 	decLabel = new wxStaticText(this, wxID_ANY, "");
@@ -213,7 +233,7 @@ MyFrame::MyFrame()
 	parentSizer->AddSpacer(10);
 
 
-	sizer = new wxGridSizer(5, 2, 0, 0);
+	sizer = new wxGridSizer(3, 4, 0, 0);
 
 	sizer->Add(label, 0, wxEXPAND | wxLEFT, 10);
 	sizer->Add(binaryLabel, 0, wxEXPAND);
@@ -230,13 +250,43 @@ MyFrame::MyFrame()
 	sizer->Add(label4, 0,  wxEXPAND | wxLEFT, 10);
 	sizer->Add(parityChoice, 0, wxEXPAND);
 
+	wxArrayString myChoices2;
+	myChoices2.Add(wxT("Ninguno")); // populate the array
+	myChoices2.Add(wxT("Bit p1"));
+	myChoices2.Add(wxT("Bit p2"));
+	myChoices2.Add(wxT("Bit p3"));
+	myChoices2.Add(wxT("Bit p4"));
+	myChoices2.Add(wxT("Bit p5"));
+	myChoices2.Add(wxT("Bit p6"));
+	myChoices2.Add(wxT("Bit p7"));
+	myChoices2.Add(wxT("Bit p8"));
+	myChoices2.Add(wxT("Bit p9"));
+	myChoices2.Add(wxT("Bit p10"));
+	myChoices2.Add(wxT("Bit p11"));
+	myChoices2.Add(wxT("Bit p12"));
+
+
+
+
+
+	falloChoice = new wxChoice(this, 12346, wxDefaultPosition, wxDefaultSize, myChoices2);
+	falloChoice->SetSelection(0);
+	falloChoice->Disable();
+
+	Bind(wxEVT_CHOICE, &MyFrame::FallarBit, this, 12346);
+
+
+
+	sizer->Add(label5, 0,  wxEXPAND | wxLEFT, 10);
+	sizer->Add(falloChoice, 0, wxEXPAND);
+
 
 	parentSizer->Add(sizer);
 
 	parentSizer->AddSpacer(10);
 
-	tabla = new wxStaticText(this, wxID_ANY, L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-											 "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d1  | d11 | p5 | d12 |\n"
+	tabla = new wxTextCtrl(this, wxID_ANY, L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+											 "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d10 | d11 | p5 | d12 |\n"
 											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
                                              "| Palabra de datos:               |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
 											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
@@ -248,15 +298,51 @@ MyFrame::MyFrame()
 											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
 											 "| p4                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
 											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-											 "| Palabra de datos (con paridad): |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
-											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+");
+										     "| p5                              |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+										     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+										     "| Palabra de datos (con paridad): |    |    |    |    |    |    |    |    |    |    |    |    |    |     |     |    |     |\n"
+											 "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+", wxDefaultPosition, wxSize(618,190), wxTE_RICH2 | wxTE_MULTILINE | wxTE_READONLY | wxTE_NO_VSCROLL | wxTE_DONTWRAP);
 
 
-    wxFont* tmpFont = new wxFont(wxFontInfo(8).FaceName("Monospace"));
+	tabla->SetDefaultStyle(wxTextAttr(*wxWHITE, *wxBLACK));
+
+	wxFont* tmpFont = new wxFont(wxFontInfo(8).FaceName("Monospace"));
     tmpFont->SetFaceName("Monospace");
 	tabla->SetFont(*tmpFont);
 
-	parentSizer->Add(tabla, 0, wxEXPAND |wxALL, 10);
+	tabla2 = new wxTextCtrl(this, wxID_ANY, L"+--------------+----------------------+--------+\n"
+											"| COMPROBACIÓN |         valor        | estado |\n"
+											"+              +----------------------+        +\n"
+											"|              | esperado | calculado |        |\n"
+											"+--------------+----------+-----------+--------+\n"
+											"|      p1      |          |           |        |\n"
+											"+--------------+----------+-----------+--------+\n"
+											"|      p2      |          |           |        |\n"
+											"+--------------+----------+-----------+--------+\n"
+											"|      p3      |          |           |        |\n"
+											"+--------------+----------+-----------+--------+\n"
+											"|      p4      |          |           |        |\n"
+											"+--------------+----------+-----------+--------+\n"
+											"|      p5      |          |           |        |\n"
+											"+--------------+----------+-----------+--------+", wxDefaultPosition, wxSize(245,170), wxTE_RICH2 | wxTE_MULTILINE | wxTE_READONLY | wxTE_NO_VSCROLL | wxTE_DONTWRAP);
+
+	tabla2->SetDefaultStyle(wxTextAttr(*wxWHITE, *wxBLACK));
+	tabla2->SetFont(*tmpFont);
+
+
+	parentSizer->Add(tabla, 0, wxALL, 10);
+	parentSizer->Add(tabla2, 0, wxALL, 10);
+
+	wxStaticText *label6 = new wxStaticText(this, wxID_ANY, L"Índice de error: ");
+	errorLabel = new wxStaticText(this, wxID_ANY, L"N/H");
+
+	parentSizer->Add(label6, 0, wxLEFT | wxTOP, 10);
+	parentSizer->Add(errorLabel, 0, wxLEFT, 10);
+
+
+
+
+
 
 
 	SetSizer(parentSizer);
@@ -316,41 +402,40 @@ void MyFrame::UpdateLabels()
 	//Obtener paridad, 0 = par, 1 = impar
 	int paridad = parityChoice->GetSelection();
 	parityChoice->Enable();
+	falloChoice->Enable();
+	falloChoice->SetSelection(0);
 
 
 	vectorInit = H->stringToArray(binaryString);
 	vectorEncoded = H->encode(vectorInit, paridad);
-
 	vectorExtended = H->extend(vectorInit);
-	std::cout <<  vectorInit << std::endl;
-	std::cout <<  vectorEncoded << std::endl;
 
-	std::cout << "Extended: " << vectorExtended << std::endl;
 
+	// TODO: DESCOMENTAR ESTO
 	parity0 = H->createParityVector(vectorInit, 0, paridad);
 	parity1 = H->createParityVector(vectorInit, 1, paridad);
 	parity2 = H->createParityVector(vectorInit, 2, paridad);
 	parity3 = H->createParityVector(vectorInit, 3, paridad);
-	parity4 = H->createParityVector(vectorInit, 4, paridad);
-
-
-
-
-	std::cout << "Extended: " << vectorExtended << std::endl;
-
-
-	std::cout << "Número original: " << binaryNumber << std::endl;
-
-	std::cout << "Extended: " << vectorExtended << std::endl;
+	//parity4 = H->createParityVector(vectorInit, 4, paridad);
 
 
 
 
 
-	tabla->SetLabel(L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
+
+	UpdateFallaTabla();
+	PrintTabla();
+
+
+}
+
+void MyFrame::PrintTabla() {
+	auto *H = new Hamming();
+
+	tabla->SetValue(L"+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
                     "|                                 | p1 | p2 | d1 | p3 | d2 | d3 | d4 | p4 | d5 | d6 | d7 | d8 | d9 | d10 | d11 | p5 | d12 |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-					"| Palabra de datos:               |    |    | "+H->showAtLength(number,0)+"  |    | "+H->showAtLength(number,1)+"  | "+H->showAtLength(number,2)+"  | "+H->showAtLength(number,3)+"  |    | "+H->showAtLength(number,4)+"  | "+H->showAtLength(number,5)+"  | "+H->showAtLength(number,6)+"  | "+H->showAtLength(number,7)+"  | "+H->showAtLength(number,8)+"  | "+H->showAtLength(number,9)+"   | "+H->showAtLength(number,10)+"   |    | "+H->showAtLength(number,11)+"   |\n"
+					"| Palabra de datos:               |    |    | "+H->printIf(vectorFallandoInit,0)+"  |    | "+H->printIf(vectorFallandoInit,1)+"  | "+H->printIf(vectorFallandoInit,2)+"  | "+H->printIf(vectorFallandoInit,3)+"  |    | "+H->printIf(vectorFallandoInit,4)+"  | "+H->printIf(vectorFallandoInit,5)+"  | "+H->printIf(vectorFallandoInit,6)+"  | "+H->printIf(vectorFallandoInit,7)+"  | "+H->printIf(vectorFallandoInit,8)+"  | "+H->printIf(vectorFallandoInit,9)+"   | "+H->printIf(vectorFallandoInit,10)+"   |    | "+H->printIf(vectorFallandoInit,11)+"   |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
 					"| p1                              | "+H->printIf(parity0, 0)+"  | "+H->printIf(parity0, 1)+"  | "+H->printIf(parity0, 2)+"  | "+H->printIf(parity0, 3)+"  | "+H->printIf(parity0, 4)+"  | "+H->printIf(parity0, 5)+"  | "+H->printIf(parity0, 6)+"  | "+H->printIf(parity0, 7)+"  | "+H->printIf(parity0, 8)+"  | "+H->printIf(parity0, 9)+"  | "+H->printIf(parity0, 10)+"  | "+H->printIf(parity0, 11)+"  | "+H->printIf(parity0, 12)+"  | "+H->printIf(parity0, 13)+"   | "+H->printIf(parity0, 14)+"   | "+H->printIf(parity0, 15)+"  | "+H->printIf(parity0, 16)+"   |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
@@ -365,5 +450,64 @@ void MyFrame::UpdateLabels()
 					"| Palabra de datos (con paridad): | "+H->printIf(vectorEncoded, 0)+"  | "+H->printIf(vectorEncoded, 1)+"  | "+H->printIf(vectorEncoded, 2)+"  | "+H->printIf(vectorEncoded, 3)+"  | "+H->printIf(vectorEncoded, 4)+"  | "+H->printIf(vectorEncoded, 5)+"  | "+H->printIf(vectorEncoded, 6)+"  | "+H->printIf(vectorEncoded, 7)+"  | "+H->printIf(vectorEncoded, 8)+"  | "+H->printIf(vectorEncoded, 9)+"  | "+H->printIf(vectorEncoded, 10)+"  | "+H->printIf(vectorEncoded, 11)+"  | "+H->printIf(vectorEncoded, 12)+"  | "+H->printIf(vectorEncoded, 13)+"   | "+H->printIf(vectorEncoded, 14)+"   | "+H->printIf(vectorEncoded, 15)+"  | "+H->printIf(vectorEncoded, 16)+"   |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+");
 
+}
 
+void MyFrame::FallarBit(wxCommandEvent& event) {
+	UpdateFallaTabla();
+	PrintTabla();
+}
+
+void MyFrame::UpdateFallaTabla() {
+	auto *H = new Hamming();
+
+
+	int sel = falloChoice->GetSelection();
+	if (sel > binaryString.size()) {
+		wxMessageBox(L"El número introducido no contiene tantos bits.", "Error", wxOK | wxICON_ERROR);
+		falloChoice->SetSelection(0);
+		UpdateFallaTabla();
+	} else if (sel > 0) {
+		vectorFallandoInit = vectorInit;
+		vectorFallandoInit[sel - 1] ^= 1;
+		vectorFallandoEncoded = H->encode(vectorFallandoInit, parityChoice->GetSelection());
+		errorLabel->SetLabel(std::to_string(H->findError(vectorFallandoEncoded, parityChoice->GetSelection())));
+
+	} else {
+		vectorFallandoInit = vectorInit;
+		vectorFallandoEncoded = vectorEncoded;
+		errorLabel->SetLabel(L"N/H");
+
+	}
+
+
+
+
+	tabla2->SetValue(L"+--------------+----------------------+--------+\n"
+	 "| COMPROBACIÓN |         valor        | estado |\n"
+	 "+              +----------------------+        +\n"
+	 "|              | esperado | calculado |        |\n"
+	 "+--------------+----------+-----------+--------+\n"
+	 "|      p1      |     "+H->printIf(vectorEncoded, 0)+"    |     "+H->printIf(vectorFallandoEncoded, 0)+"     | "+CheckSameItem(0)+"|\n"
+	 "+--------------+----------+-----------+--------+\n"
+	 "|      p2      |     "+H->printIf(vectorEncoded, 1)+"    |     "+H->printIf(vectorFallandoEncoded, 1)+"     | "+CheckSameItem(1)+"|\n"
+	 "+--------------+----------+-----------+--------+\n"
+	 "|      p3      |     "+H->printIf(vectorEncoded, 3)+"    |     "+H->printIf(vectorFallandoEncoded, 3)+"     | "+CheckSameItem(3)+"|\n"
+	 "+--------------+----------+-----------+--------+\n"
+	 "|      p4      |     "+H->printIf(vectorEncoded, 7)+"    |     "+H->printIf(vectorFallandoEncoded, 7)+"     | "+CheckSameItem(7)+"|\n"
+	 "+--------------+----------+-----------+--------+\n"
+	 "|      p5      |     "+H->printIf(vectorEncoded, 16)+"    |     "+H->printIf(vectorFallandoEncoded, 16)+"     | "+CheckSameItem(16)+"|\n"
+	 "+--------------+----------+-----------+--------+");
+
+}
+
+string MyFrame::CheckSameItem(int pos) {
+	if (vectorFallandoEncoded.size() <= pos) {
+		return "       ";
+	}
+
+	if (vectorFallandoEncoded.at(pos) == vectorEncoded.at(pos)) {
+		return "ok     ";
+	} else {
+		return "ERROR  ";
+	}
 }
