@@ -97,7 +97,7 @@ private:
 	void UpdateFallaTabla();
 
 
-	string CheckSameItem(int pos);
+	string CheckSameItem(int pos, int length);
 
 	void PrintTabla();
 };
@@ -314,21 +314,19 @@ MyFrame::MyFrame()
     tmpFont->SetFaceName("Monospace");
 	tabla->SetFont(*tmpFont);
 
-	tabla2 = new wxTextCtrl(this, wxID_ANY, L"+--------------+----------------------+--------+\n"
-											"| COMPROBACIÓN |         valor        | estado |\n"
-											"+              +----------------------+        +\n"
-											"|              | esperado | calculado |        |\n"
-											"+--------------+----------+-----------+--------+\n"
-											"|      p1      |          |           |        |\n"
-											"+--------------+----------+-----------+--------+\n"
-											"|      p2      |          |           |        |\n"
-											"+--------------+----------+-----------+--------+\n"
-											"|      p3      |          |           |        |\n"
-											"+--------------+----------+-----------+--------+\n"
-											"|      p4      |          |           |        |\n"
-											"+--------------+----------+-----------+--------+\n"
-											"|      p5      |          |           |        |\n"
-											"+--------------+----------+-----------+--------+", wxDefaultPosition, wxSize(245,170), wxTE_RICH2 | wxTE_MULTILINE | wxTE_READONLY | wxTE_NO_VSCROLL | wxTE_DONTWRAP);
+	tabla2 = new wxTextCtrl(this, wxID_ANY, L"+--------------+-----------+--------+\n"
+											"| COMPROBACIÓN |    valor  | estado |\n"
+											"+--------------+-----------+--------+\n"
+											"|      p1      |           |        |\n"
+											"+--------------+-----------+--------+\n"
+											"|      p2      |           |        |\n"
+											"+--------------+-----------+--------+\n"
+											"|      p3      |           |        |\n"
+											"+--------------+-----------+--------+\n"
+											"|      p4      |           |        |\n"
+											"+--------------+-----------+--------+\n"
+											"|      p5      |           |        |\n"
+											"+--------------+-----------+--------+", wxDefaultPosition, wxSize(188,150), wxTE_RICH2 | wxTE_MULTILINE | wxTE_READONLY | wxTE_NO_VSCROLL | wxTE_DONTWRAP);
 
 	tabla2->SetDefaultStyle(wxTextAttr(*wxWHITE, *wxBLACK));
 	tabla2->SetFont(*tmpFont);
@@ -495,30 +493,32 @@ void MyFrame::UpdateFallaTabla() {
 
 
 
-	tabla2->SetValue(L"+--------------+----------------------+--------+\n"
-	 "| COMPROBACIÓN |         valor        | estado |\n"
-	 "+              +----------------------+        +\n"
-	 "|              | esperado | calculado |        |\n"
-	 "+--------------+----------+-----------+--------+\n"
-	 "|      p1      |     "+H->printIf(vectorFallandoEncoded, 0)+"    |     "+H->printIf(vectorFallandoEncoded, 0)+"     | "+CheckSameItem(0)+"|\n"
-	 "+--------------+----------+-----------+--------+\n"
-	 "|      p2      |     "+H->printIf(vectorFallandoEncoded, 1)+"    |     "+H->printIf(vectorFallandoEncoded, 1)+"     | "+CheckSameItem(1)+"|\n"
-	 "+--------------+----------+-----------+--------+\n"
-	 "|      p3      |     "+H->printIf(vectorFallandoEncoded, 3)+"    |     "+H->printIf(vectorFallandoEncoded, 3)+"     | "+CheckSameItem(3)+"|\n"
-	 "+--------------+----------+-----------+--------+\n"
-	 "|      p4      |     "+H->printIf(vectorFallandoEncoded, 7)+"    |     "+H->printIf(vectorFallandoEncoded, 7)+"     | "+CheckSameItem(7)+"|\n"
-	 "+--------------+----------+-----------+--------+\n"
-	 "|      p5      |     "+H->printIf(vectorFallandoEncoded, 16)+"    |     "+H->printIf(vectorFallandoEncoded, 16)+"     | "+CheckSameItem(16)+"|\n"
-	 "+--------------+----------+-----------+--------+");
+
+	tabla2->SetValue(L"+--------------+-----------+--------+\n"
+	 "| COMPROBACIÓN |    valor  | estado |\n"
+	 "+--------------+-----------+--------+\n"
+	 "|      p1      |     "+H->printIf(vectorFallandoEncoded, 0)+"     | "+CheckSameItem(0, 0)+"|\n"
+	 "+--------------+-----------+--------+\n"
+	 "|      p2      |     "+H->printIf(vectorFallandoEncoded, 1)+"     | "+CheckSameItem(1, 1)+"|\n"
+	 "+--------------+-----------+--------+\n"
+	 "|      p3      |     "+H->printIf(vectorFallandoEncoded, 3)+"     | "+CheckSameItem(2, 3)+"|\n"
+	 "+--------------+-----------+--------+\n"
+	 "|      p4      |     "+H->printIf(vectorFallandoEncoded, 7)+"     | "+CheckSameItem(3, 7)+"|\n"
+	 "+--------------+-----------+--------+\n"
+	 "|      p5      |     "+H->printIf(vectorFallandoEncoded, 16)+"     | "+CheckSameItem(4, 16)+"|\n"
+	 "+--------------+-----------+--------+");
 
 }
 
-string MyFrame::CheckSameItem(int pos) {
-	if (vectorFallandoEncoded.size() <= pos) {
+string MyFrame::CheckSameItem(int pos, int length) {
+	auto *H = new Hamming();
+
+	if (vectorFallandoEncoded.size() <= length) {
 		return "       ";
 	}
 
-	if (vectorFallandoEncoded.at(pos) == vectorEncoded.at(pos)) {
+
+	if (H->checkNParity(vectorFallandoEncoded, pos, parityChoice->GetSelection())) {
 		return "ok     ";
 	} else {
 		return "ERROR  ";
