@@ -254,17 +254,21 @@ MyFrame::MyFrame()
 	myChoices2.Add(wxT("Ninguno")); // populate the array
 	myChoices2.Add(wxT("Bit p1"));
 	myChoices2.Add(wxT("Bit p2"));
+	myChoices2.Add(wxT("Bit d1"));
 	myChoices2.Add(wxT("Bit p3"));
+	myChoices2.Add(wxT("Bit d2"));
+	myChoices2.Add(wxT("Bit d3"));
+	myChoices2.Add(wxT("Bit d4"));
 	myChoices2.Add(wxT("Bit p4"));
+	myChoices2.Add(wxT("Bit d5"));
+	myChoices2.Add(wxT("Bit d6"));
+	myChoices2.Add(wxT("Bit d7"));
+	myChoices2.Add(wxT("Bit d8"));
+	myChoices2.Add(wxT("Bit d9"));
+	myChoices2.Add(wxT("Bit d10"));
+	myChoices2.Add(wxT("Bit d11"));
 	myChoices2.Add(wxT("Bit p5"));
-	myChoices2.Add(wxT("Bit p6"));
-	myChoices2.Add(wxT("Bit p7"));
-	myChoices2.Add(wxT("Bit p8"));
-	myChoices2.Add(wxT("Bit p9"));
-	myChoices2.Add(wxT("Bit p10"));
-	myChoices2.Add(wxT("Bit p11"));
-	myChoices2.Add(wxT("Bit p12"));
-
+	myChoices2.Add(wxT("Bit d12"));
 
 
 
@@ -447,7 +451,7 @@ void MyFrame::PrintTabla() {
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
 					"| p5                              | "+H->printIf(parity4, 0)+"  | "+H->printIf(parity4, 1)+"  | "+H->printIf(parity4, 2)+"  | "+H->printIf(parity4, 3)+"  | "+H->printIf(parity4, 4)+"  | "+H->printIf(parity4, 5)+"  | "+H->printIf(parity4, 6)+"  | "+H->printIf(parity4, 7)+"  | "+H->printIf(parity4, 8)+"  | "+H->printIf(parity4, 9)+"  | "+H->printIf(parity4, 10)+"  | "+H->printIf(parity4, 11)+"  | "+H->printIf(parity4, 12)+"  | "+H->printIf(parity4, 13)+"   | "+H->printIf(parity4, 14)+"   | "+H->printIf(parity4, 15)+"  | "+H->printIf(parity4, 16)+"   |\n"
 	                "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+\n"
-					"| Palabra de datos (con paridad): | "+H->printIf(vectorEncoded, 0)+"  | "+H->printIf(vectorEncoded, 1)+"  | "+H->printIf(vectorEncoded, 2)+"  | "+H->printIf(vectorEncoded, 3)+"  | "+H->printIf(vectorEncoded, 4)+"  | "+H->printIf(vectorEncoded, 5)+"  | "+H->printIf(vectorEncoded, 6)+"  | "+H->printIf(vectorEncoded, 7)+"  | "+H->printIf(vectorEncoded, 8)+"  | "+H->printIf(vectorEncoded, 9)+"  | "+H->printIf(vectorEncoded, 10)+"  | "+H->printIf(vectorEncoded, 11)+"  | "+H->printIf(vectorEncoded, 12)+"  | "+H->printIf(vectorEncoded, 13)+"   | "+H->printIf(vectorEncoded, 14)+"   | "+H->printIf(vectorEncoded, 15)+"  | "+H->printIf(vectorEncoded, 16)+"   |\n"
+					"| Palabra de datos (con paridad): | "+H->printIf(vectorFallandoEncoded, 0)+"  | "+H->printIf(vectorFallandoEncoded, 1)+"  | "+H->printIf(vectorFallandoEncoded, 2)+"  | "+H->printIf(vectorFallandoEncoded, 3)+"  | "+H->printIf(vectorFallandoEncoded, 4)+"  | "+H->printIf(vectorFallandoEncoded, 5)+"  | "+H->printIf(vectorFallandoEncoded, 6)+"  | "+H->printIf(vectorFallandoEncoded, 7)+"  | "+H->printIf(vectorFallandoEncoded, 8)+"  | "+H->printIf(vectorFallandoEncoded, 9)+"  | "+H->printIf(vectorFallandoEncoded, 10)+"  | "+H->printIf(vectorFallandoEncoded, 11)+"  | "+H->printIf(vectorFallandoEncoded, 12)+"  | "+H->printIf(vectorFallandoEncoded, 13)+"   | "+H->printIf(vectorFallandoEncoded, 14)+"   | "+H->printIf(vectorFallandoEncoded, 15)+"  | "+H->printIf(vectorFallandoEncoded, 16)+"   |\n"
                     "+---------------------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+-----+-----+----+-----+");
 
 }
@@ -462,14 +466,14 @@ void MyFrame::UpdateFallaTabla() {
 
 
 	int sel = falloChoice->GetSelection();
-	if (sel > binaryString.size()) {
+	if (sel > vectorEncoded.size()) {
 		wxMessageBox(L"El número introducido no contiene tantos bits.", "Error", wxOK | wxICON_ERROR);
 		falloChoice->SetSelection(0);
 		UpdateFallaTabla();
 	} else if (sel > 0) {
 		vectorFallandoInit = vectorInit;
-		vectorFallandoInit[sel - 1] ^= 1;
-		vectorFallandoEncoded = H->encode(vectorFallandoInit, parityChoice->GetSelection());
+		vectorFallandoEncoded = vectorEncoded;
+		vectorFallandoEncoded[sel - 1] ^= 1;
 		errorLabel->SetLabel(std::to_string(H->findError(vectorFallandoEncoded, parityChoice->GetSelection())));
 
 	} else {
@@ -487,15 +491,15 @@ void MyFrame::UpdateFallaTabla() {
 	 "+              +----------------------+        +\n"
 	 "|              | esperado | calculado |        |\n"
 	 "+--------------+----------+-----------+--------+\n"
-	 "|      p1      |     "+H->printIf(vectorEncoded, 0)+"    |     "+H->printIf(vectorFallandoEncoded, 0)+"     | "+CheckSameItem(0)+"|\n"
+	 "|      p1      |     "+H->printIf(vectorFallandoEncoded, 0)+"    |     "+H->printIf(vectorFallandoEncoded, 0)+"     | "+CheckSameItem(0)+"|\n"
 	 "+--------------+----------+-----------+--------+\n"
-	 "|      p2      |     "+H->printIf(vectorEncoded, 1)+"    |     "+H->printIf(vectorFallandoEncoded, 1)+"     | "+CheckSameItem(1)+"|\n"
+	 "|      p2      |     "+H->printIf(vectorFallandoEncoded, 1)+"    |     "+H->printIf(vectorFallandoEncoded, 1)+"     | "+CheckSameItem(1)+"|\n"
 	 "+--------------+----------+-----------+--------+\n"
-	 "|      p3      |     "+H->printIf(vectorEncoded, 3)+"    |     "+H->printIf(vectorFallandoEncoded, 3)+"     | "+CheckSameItem(3)+"|\n"
+	 "|      p3      |     "+H->printIf(vectorFallandoEncoded, 3)+"    |     "+H->printIf(vectorFallandoEncoded, 3)+"     | "+CheckSameItem(3)+"|\n"
 	 "+--------------+----------+-----------+--------+\n"
-	 "|      p4      |     "+H->printIf(vectorEncoded, 7)+"    |     "+H->printIf(vectorFallandoEncoded, 7)+"     | "+CheckSameItem(7)+"|\n"
+	 "|      p4      |     "+H->printIf(vectorFallandoEncoded, 7)+"    |     "+H->printIf(vectorFallandoEncoded, 7)+"     | "+CheckSameItem(7)+"|\n"
 	 "+--------------+----------+-----------+--------+\n"
-	 "|      p5      |     "+H->printIf(vectorEncoded, 16)+"    |     "+H->printIf(vectorFallandoEncoded, 16)+"     | "+CheckSameItem(16)+"|\n"
+	 "|      p5      |     "+H->printIf(vectorFallandoEncoded, 16)+"    |     "+H->printIf(vectorFallandoEncoded, 16)+"     | "+CheckSameItem(16)+"|\n"
 	 "+--------------+----------+-----------+--------+");
 
 }
